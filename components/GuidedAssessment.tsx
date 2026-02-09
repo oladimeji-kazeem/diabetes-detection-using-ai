@@ -51,6 +51,12 @@ const GuidedAssessment: React.FC<GuidedAssessmentProps> = ({ onSubmit, isLoading
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handlePatientIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow alphanumeric characters and hyphens
+    const val = e.target.value.replace(/[^a-zA-Z0-9-]/g, '');
+    updateField('patientName', val);
+  };
+
   const currentStepInfo = steps[step];
   const activeIndicator = INDICATORS.find(i => i.id === currentStepInfo.indicatorId);
 
@@ -91,7 +97,7 @@ const GuidedAssessment: React.FC<GuidedAssessmentProps> = ({ onSubmit, isLoading
                   <User />
                 </div>
                 <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                  We begin by establishing the patient profile. Age is a fundamental weight in our risk assessment algorithm.
+                  Establishing the baseline patient profile. Age and identifier are the primary weights in the assessment initiation.
                 </p>
               </div>
             </div>
@@ -111,7 +117,7 @@ const GuidedAssessment: React.FC<GuidedAssessmentProps> = ({ onSubmit, isLoading
         <div className="space-y-10">
           {step === 0 && (
             <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
-              {(role === 'professional' || role === 'clinic') && (
+              {(role === 'professional' || role === 'clinic' || role === 'lab') && (
                 <div className="space-y-3">
                   <label className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
                     Patient Reference ID <AlertCircle size={14} className="text-slate-300" />
@@ -119,10 +125,11 @@ const GuidedAssessment: React.FC<GuidedAssessmentProps> = ({ onSubmit, isLoading
                   <input 
                     type="text" 
                     value={formData.patientName} 
-                    onChange={e => updateField('patientName', e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-[1.25rem] px-6 py-5 text-lg font-bold text-slate-800 focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-300 outline-none transition-all"
+                    onChange={handlePatientIdChange}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-[1.25rem] px-6 py-5 text-lg font-bold text-slate-800 focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-300 outline-none transition-all placeholder:text-slate-300"
                     placeholder="Enter Clinical Identifier"
                   />
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider px-2">Alphanumeric characters and hyphens only</p>
                 </div>
               )}
               <div className="space-y-3">

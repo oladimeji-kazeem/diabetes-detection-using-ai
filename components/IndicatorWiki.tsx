@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Target, 
   HelpCircle, 
@@ -9,7 +9,10 @@ import {
   Heart, 
   Dna,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Info
 } from 'lucide-react';
 import { IndicatorInfo } from '../types';
 
@@ -71,6 +74,8 @@ export const INDICATORS: IndicatorInfo[] = [
 ];
 
 const IndicatorWiki: React.FC = () => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   const getIcon = (id: string) => {
     switch (id) {
       case 'glucose': return <Droplets />;
@@ -83,55 +88,89 @@ const IndicatorWiki: React.FC = () => {
     }
   };
 
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   return (
     <div className="space-y-10">
-      <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden transition-colors duration-300">
         <div className="relative z-10">
-          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Clinical Parameter Library</h2>
-          <p className="text-slate-500 font-medium max-w-3xl leading-relaxed text-lg">
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Clinical Parameter Library</h2>
+          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-3xl leading-relaxed text-lg">
             GlucoScan uses several key physiological and demographic indicators to model your risk profile. 
-            Understanding these metrics is essential for accurate health management.
+            Click an indicator to explore its clinical significance in detail.
           </p>
         </div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 dark:bg-blue-900/20 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {INDICATORS.map((indicator) => (
-          <div key={indicator.id} className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-8">
-              <div className="p-5 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                {getIcon(indicator.id)}
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Target Range</p>
-                <p className="text-xl font-black text-slate-800 tracking-tight">
-                  {indicator.range} <span className="text-xs font-bold text-slate-400">{indicator.unit}</span>
-                </p>
-              </div>
+      <div className="grid grid-cols-1 gap-6">
+        {INDICATORS.map((indicator) => {
+          const isExpanded = expandedId === indicator.id;
+          return (
+            <div 
+              key={indicator.id} 
+              className={`bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border ${isExpanded ? 'border-[#14B8A6] ring-4 ring-teal-50 dark:ring-teal-900/20' : 'border-slate-100 dark:border-slate-700'} hover:shadow-xl transition-all duration-300 overflow-hidden group`}
+            >
+              <button 
+                onClick={() => toggleExpand(indicator.id)}
+                className="w-full text-left p-8 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-6">
+                  <div className={`p-5 rounded-2xl transition-all duration-300 shadow-sm ${isExpanded ? 'bg-[#14B8A6] text-white' : 'bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400'}`}>
+                    {getIcon(indicator.id)}
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{indicator.label}</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">
+                      Range: {indicator.range} <span className="font-bold">{indicator.unit}</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="text-slate-300 group-hover:text-slate-500 transition-colors">
+                  {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="px-8 pb-8 animate-in slide-in-from-top-2 duration-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-50 dark:border-slate-700">
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-black text-[#1E3A8A] dark:text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                        <Info size={14} /> Comprehensive Description
+                      </h4>
+                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                        {indicator.description}
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-black text-[#14B8A6] uppercase tracking-widest flex items-center gap-2">
+                        <Target size={14} /> Clinical Significance
+                      </h4>
+                      <div className="bg-teal-50 dark:bg-teal-900/20 p-6 rounded-2xl border border-teal-100 dark:border-teal-800 relative">
+                        <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed italic font-medium">
+                          "{indicator.whyItMatters}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800 flex items-center gap-3">
+                    <AlertCircle className="text-amber-500" size={16} />
+                    <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-tight">
+                      Note: Factors like fasting duration and hydration levels can influence {indicator.label} readings.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">{indicator.label}</h3>
-            <p className="text-slate-600 mb-8 leading-relaxed font-medium">
-              {indicator.description}
-            </p>
-            
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 relative">
-              <div className="absolute top-4 right-4 text-blue-200">
-                <Target size={24} />
-              </div>
-              <h4 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                Clinical Significance
-              </h4>
-              <p className="text-sm text-slate-500 leading-relaxed italic font-medium">
-                "{indicator.whyItMatters}"
-              </p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
-      <div className="bg-blue-600 text-white p-12 rounded-[3rem] shadow-2xl shadow-blue-200 relative overflow-hidden group">
+      <div className="bg-blue-600 dark:bg-[#1E3A8A] text-white p-12 rounded-[3rem] shadow-2xl shadow-blue-200 dark:shadow-none relative overflow-hidden group transition-colors duration-300">
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
@@ -147,21 +186,8 @@ const IndicatorWiki: React.FC = () => {
           </button>
         </div>
         
-        {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl transition-transform duration-1000 group-hover:scale-110"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full -ml-32 -mb-32 blur-2xl"></div>
-      </div>
-
-      <div className="flex items-center gap-4 p-8 bg-amber-50 rounded-[2rem] border border-amber-100">
-        <div className="p-3 bg-amber-100 text-amber-600 rounded-xl">
-          <AlertCircle size={24} />
-        </div>
-        <div>
-          <h4 className="font-bold text-amber-900">Important Scientific Note</h4>
-          <p className="text-sm text-amber-700/80 font-medium">
-            The reference ranges provided are generalized. Clinical interpretation should always consider individual context and lab-specific reference intervals.
-          </p>
-        </div>
       </div>
     </div>
   );
