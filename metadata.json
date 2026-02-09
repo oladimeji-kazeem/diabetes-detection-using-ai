@@ -1,5 +1,5 @@
 {
-  "name": "GlucoScan AI - Advanced Diabetes Risk Assessment",
+  "name": "HealthScan AI - Advanced Health Risk Assessment",
   "description": "A comprehensive healthcare application that utilizes Gemini AI to analyze health parameters and provide personalized diabetes risk assessments, lifestyle recommendations, and interactive medical Q&A.",
   "requestFramePermissions": [
     "camera"

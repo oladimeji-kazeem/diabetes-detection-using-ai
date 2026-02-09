@@ -30,7 +30,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
 
   return (
     <div className={`p-8 rounded-3xl shadow-xl border ${styles.border} ${styles.bg} transition-all duration-500 bg-white relative overflow-hidden print:p-10 print:border-0 print:shadow-none`}>
-      
+
       {/* Print-only Header */}
       <div className="hidden print:flex items-center justify-between mb-10 border-b-2 border-slate-100 pb-6">
         <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
             <HeartPulse className="text-white w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900">GlucoScan AI</h1>
+            <h1 className="text-2xl font-black text-slate-900">HealthScan AI</h1>
             <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Medical Assessment Report</p>
           </div>
         </div>
@@ -55,7 +55,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
           <h3 className="text-xl font-bold text-slate-800">Risk Assessment Analysis</h3>
           <p className="text-sm text-slate-500">Evaluated by Gemini Clinical Model</p>
         </div>
-        <button 
+        <button
           onClick={handleExportPDF}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all font-semibold text-sm shadow-sm active:scale-95 no-print"
         >
@@ -86,8 +86,8 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-             <span className={`text-4xl font-black ${styles.color}`}>{result.probability}%</span>
-             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Risk Probability</span>
+            <span className={`text-4xl font-black ${styles.color}`}>{result.probability}%</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Risk Probability</span>
           </div>
         </div>
 
@@ -110,7 +110,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:gap-10">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm print:border-slate-200">
           <h5 className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-50 pb-2">
-            <Info size={18} className="text-blue-500" /> 
+            <Info size={18} className="text-blue-500" />
             CORE RISK FACTORS
           </h5>
           <ul className="space-y-3">
@@ -127,7 +127,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
 
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm print:border-slate-200">
           <h5 className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-50 pb-2">
-            <ArrowRight size={18} className="text-emerald-500" /> 
+            <ArrowRight size={18} className="text-emerald-500" />
             CLINICAL RECOMMENDATIONS
           </h5>
           <ul className="space-y-3">

@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import { 
-  Target, 
-  HelpCircle, 
-  Activity, 
-  Droplets, 
-  User, 
-  Heart, 
+import {
+  Target,
+  HelpCircle,
+  Activity,
+  Droplets,
+  User,
+  Heart,
   Dna,
   ShieldCheck,
   AlertCircle,
@@ -98,7 +98,7 @@ const IndicatorWiki: React.FC = () => {
         <div className="relative z-10">
           <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Clinical Parameter Library</h2>
           <p className="text-slate-500 dark:text-slate-400 font-medium max-w-3xl leading-relaxed text-lg">
-            GlucoScan uses several key physiological and demographic indicators to model your risk profile. 
+            HealthScan uses several key physiological and demographic indicators to model your risk profile.
             Click an indicator to explore its clinical significance in detail.
           </p>
         </div>
@@ -109,11 +109,11 @@ const IndicatorWiki: React.FC = () => {
         {INDICATORS.map((indicator) => {
           const isExpanded = expandedId === indicator.id;
           return (
-            <div 
-              key={indicator.id} 
+            <div
+              key={indicator.id}
               className={`bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border ${isExpanded ? 'border-[#14B8A6] ring-4 ring-teal-50 dark:ring-teal-900/20' : 'border-slate-100 dark:border-slate-700'} hover:shadow-xl transition-all duration-300 overflow-hidden group`}
             >
-              <button 
+              <button
                 onClick={() => toggleExpand(indicator.id)}
                 className="w-full text-left p-8 flex items-center justify-between"
               >
@@ -156,7 +156,7 @@ const IndicatorWiki: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-8 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800 flex items-center gap-3">
                     <AlertCircle className="text-amber-500" size={16} />
                     <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-tight">
@@ -169,7 +169,7 @@ const IndicatorWiki: React.FC = () => {
           );
         })}
       </div>
-      
+
       <div className="bg-blue-600 dark:bg-[#1E3A8A] text-white p-12 rounded-[3rem] shadow-2xl shadow-blue-200 dark:shadow-none relative overflow-hidden group transition-colors duration-300">
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-6">
@@ -185,7 +185,7 @@ const IndicatorWiki: React.FC = () => {
             Consult AI Intelligence
           </button>
         </div>
-        
+
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl transition-transform duration-1000 group-hover:scale-110"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full -ml-32 -mb-32 blur-2xl"></div>
       </div>

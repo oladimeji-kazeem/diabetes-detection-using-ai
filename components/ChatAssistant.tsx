@@ -13,18 +13,18 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ role }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const saved = localStorage.getItem(`glucoscan_chat_history_${role}`);
     if (saved) return JSON.parse(saved);
-    
+
     return [
-      { 
-        role: 'model', 
+      {
+        role: 'model',
         timestamp: Date.now(),
-        text: role === 'professional' 
-          ? 'Welcome, Clinical Specialist. I am your **GlucoScan Clinical Assistant**. I can help you interpret patient data, suggest further diagnostic tests, or provide summaries based on current endocrine guidelines. How can I assist your practice today?'
-          : 'Hello! I am your **GlucoScan Health Coach**. I am here to help you understand your diabetes risk and suggest simple, healthy changes you can make today. What would you like to talk about?' 
+        text: role === 'professional'
+          ? 'Welcome, Clinical Specialist. I am your **HealthScan Clinical Assistant**. I can help you interpret patient data, suggest further diagnostic tests, or provide summaries based on current endocrine guidelines. How can I assist your practice today?'
+          : 'Hello! I am your **HealthScan Health Coach**. I am here to help you understand your diabetes risk and suggest simple, healthy changes you can make today. What would you like to talk about?'
       }
     ];
   });
-  
+
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -101,29 +101,27 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ role }) => {
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center mt-1 shadow-sm ${
-                msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300'
-              }`}>
+              <div className={`w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center mt-1 shadow-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300'
+                }`}>
                 {msg.role === 'user' ? <User size={20} /> : <Bot size={20} />}
               </div>
-              
+
               <div className="group relative">
-                <div 
-                  className={`p-5 rounded-3xl text-sm leading-relaxed shadow-sm prose-chat ${
-                    msg.role === 'user' 
-                      ? 'bg-blue-600 text-white rounded-tr-none' 
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'
-                  }`}
+                <div
+                  className={`p-5 rounded-3xl text-sm leading-relaxed shadow-sm prose-chat ${msg.role === 'user'
+                    ? 'bg-blue-600 text-white rounded-tr-none'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'
+                    }`}
                   dangerouslySetInnerHTML={{ __html: marked.parse(msg.text) }}
                 />
-                
+
                 <div className={`flex items-center gap-2 mt-1 px-1 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                     <Clock size={8} /> {formatTime(msg.timestamp)}
-                   </span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <Clock size={8} /> {formatTime(msg.timestamp)}
+                  </span>
                 </div>
 
-                <button 
+                <button
                   onClick={() => copyToClipboard(msg.text, idx)}
                   className={`absolute -bottom-8 ${msg.role === 'user' ? 'right-0' : 'left-0'} p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5`}
                 >

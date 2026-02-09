@@ -31,15 +31,15 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 space-y-8 transition-colors duration-300">
           <h3 className="text-lg font-black text-slate-800 dark:text-white border-b border-slate-50 dark:border-slate-700 pb-4">Identity Information</h3>
-          
+
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
               <User size={12} /> Full Clinical Name
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#1E3A8A] transition-all"
             />
           </div>
@@ -48,10 +48,10 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
               <Mail size={12} /> Contact Email
             </label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#1E3A8A] transition-all"
             />
           </div>
@@ -60,10 +60,10 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
               <Building size={12} /> Primary Institution
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={formData.institution || ''}
-              onChange={(e) => setFormData({...formData, institution: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
               className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#1E3A8A] transition-all"
             />
           </div>
@@ -71,7 +71,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
 
         <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 space-y-8 transition-colors duration-300">
           <h3 className="text-lg font-black text-slate-800 dark:text-white border-b border-slate-50 dark:border-slate-700 pb-4">System Preferences</h3>
-          
+
           <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl transition-colors">
             <div className="flex items-center gap-3">
               {formData.preferences.darkMode ? <Moon className="text-blue-400" size={20} /> : <Sun className="text-amber-500" size={20} />}
@@ -80,9 +80,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
                 <p className="text-[10px] text-slate-400 font-bold uppercase">Eye fatigue protection</p>
               </div>
             </div>
-            <button 
+            <button
               type="button"
-              onClick={() => setFormData({...formData, preferences: {...formData.preferences, darkMode: !formData.preferences.darkMode}})}
+              onClick={() => setFormData({ ...formData, preferences: { ...formData.preferences, darkMode: !formData.preferences.darkMode } })}
               className={`w-12 h-6 rounded-full p-1 transition-colors ${formData.preferences.darkMode ? 'bg-blue-600' : 'bg-slate-300'}`}
             >
               <div className={`w-4 h-4 bg-white rounded-full transition-transform ${formData.preferences.darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
@@ -97,34 +97,34 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({ profile, onSave
                 <p className="text-[10px] text-slate-400 font-bold uppercase">Critical case monitoring</p>
               </div>
             </div>
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={formData.preferences.notifications}
-              onChange={(e) => setFormData({...formData, preferences: {...formData.preferences, notifications: e.target.checked}})}
+              onChange={(e) => setFormData({ ...formData, preferences: { ...formData.preferences, notifications: e.target.checked } })}
               className="w-6 h-6 rounded-lg text-[#1E3A8A] focus:ring-[#1E3A8A]"
             />
           </div>
 
           <div className="space-y-3">
-             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-               <Globe size={12} /> Unit Measurement System
-             </label>
-             <div className="grid grid-cols-2 gap-4">
-                <button 
-                  type="button"
-                  onClick={() => setFormData({...formData, preferences: {...formData.preferences, unitSystem: 'metric'}})}
-                  className={`py-3 rounded-xl text-xs font-black transition-all ${formData.preferences.unitSystem === 'metric' ? 'bg-[#1E3A8A] text-white shadow-lg' : 'bg-slate-50 dark:bg-slate-900 text-slate-400'}`}
-                >
-                  Metric (mg/dL)
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setFormData({...formData, preferences: {...formData.preferences, unitSystem: 'imperial'}})}
-                  className={`py-3 rounded-xl text-xs font-black transition-all ${formData.preferences.unitSystem === 'imperial' ? 'bg-[#1E3A8A] text-white shadow-lg' : 'bg-slate-50 dark:bg-slate-900 text-slate-400'}`}
-                >
-                  Imperial (mmol/L)
-                </button>
-             </div>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Globe size={12} /> Unit Measurement System
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, preferences: { ...formData.preferences, unitSystem: 'metric' } })}
+                className={`py-3 rounded-xl text-xs font-black transition-all ${formData.preferences.unitSystem === 'metric' ? 'bg-[#1E3A8A] text-white shadow-lg' : 'bg-slate-50 dark:bg-slate-900 text-slate-400'}`}
+              >
+                Metric (mg/dL)
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, preferences: { ...formData.preferences, unitSystem: 'imperial' } })}
+                className={`py-3 rounded-xl text-xs font-black transition-all ${formData.preferences.unitSystem === 'imperial' ? 'bg-[#1E3A8A] text-white shadow-lg' : 'bg-slate-50 dark:bg-slate-900 text-slate-400'}`}
+              >
+                Imperial (mmol/L)
+              </button>
+            </div>
           </div>
         </div>
 

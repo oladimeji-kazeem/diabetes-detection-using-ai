@@ -1,24 +1,24 @@
 
 import React, { useState, useMemo } from 'react';
 import { AssessmentRecord } from '../types';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  AreaChart, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
   Area,
-  Legend 
+  Legend
 } from 'recharts';
-import { 
-  Calendar, 
-  Search, 
-  Filter, 
-  ArrowUpDown, 
-  AlertCircle, 
+import {
+  Calendar,
+  Search,
+  Filter,
+  ArrowUpDown,
+  AlertCircle,
   Activity,
   Download,
   ChevronRight,
@@ -55,12 +55,16 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
   }, [records, filter, sortField, sortOrder, riskFilter]);
 
   const chartData = useMemo(() => {
-    return [...records].reverse().slice(-10).map(r => ({
-      date: new Date(r.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' }),
-      risk: r.result.probability,
-      glucose: r.data.glucose,
-      bmi: r.data.bmi
-    }));
+    return [...records].reverse().slice(-10).map(r => {
+      const data: any = r.data;
+      return {
+        date: new Date(r.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' }),
+        risk: r.result.probability,
+        // Safe access for chart, defaulting to null if not present
+        glucose: data.glucose || data.avgGlucoseLevel || 0,
+        bmi: data.bmi || 0
+      };
+    });
   }, [records]);
 
   const exportRecordPDF = (record: AssessmentRecord) => {
@@ -70,6 +74,74 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
       window.print();
       setSelectedForPrint(null);
     }, 100);
+  };
+
+  const renderMetrics = (record: AssessmentRecord) => {
+    const type = record.type || 'diabetes';
+    const data: any = record.data;
+
+    switch (type) {
+      case 'heart':
+        return [
+          { label: 'BP', val: data.trestbps, unit: 'mm' },
+          { label: 'CHOL', val: data.chol, unit: 'mg' },
+          { label: 'HR', val: data.thalach, unit: 'bpm' }
+        ];
+      case 'hypertension':
+        return [
+          { label: 'SYS', val: data.systolicBP, unit: 'mm' },
+          { label: 'DIA', val: data.diastolicBP, unit: 'mm' },
+          { label: 'BMI', val: data.bmi, unit: '' }
+        ];
+      case 'stroke':
+        return [
+          { label: 'GLUC', val: data.avgGlucoseLevel, unit: 'mg' },
+          { label: 'BMI', val: data.bmi, unit: '' },
+          { label: 'AGE', val: data.age, unit: 'yr' }
+        ];
+      default: // diabetes
+        return [
+          { label: 'GLUC', val: data.glucose, unit: 'mg' },
+          { label: 'BMI', val: data.bmi, unit: '' },
+          { label: 'AGE', val: data.age, unit: 'yr' }
+        ];
+    }
+  };
+
+  const renderPrintMetrics = (record: AssessmentRecord) => {
+    const type = record.type || 'diabetes';
+    const data: any = record.data;
+
+    switch (type) {
+      case 'heart':
+        return [
+          { label: 'Resting BP', val: data.trestbps, unit: 'mmHg' },
+          { label: 'Cholesterol', val: data.chol, unit: 'mg/dL' },
+          { label: 'Max HR', val: data.thalach, unit: 'bpm' },
+          { label: 'Chest Pain', val: ['Typical', 'Atypical', 'Non-anginal', 'Asymptomatic'][data.cp] || data.cp, unit: '' },
+        ];
+      case 'hypertension':
+        return [
+          { label: 'Systolic BP', val: data.systolicBP, unit: 'mmHg' },
+          { label: 'Diastolic BP', val: data.diastolicBP, unit: 'mmHg' },
+          { label: 'BMI', val: data.bmi, unit: 'kg/m²' },
+          { label: 'Heart Rate', val: data.heartRate, unit: 'bpm' },
+        ];
+      case 'stroke':
+        return [
+          { label: 'Avg Glucose', val: data.avgGlucoseLevel, unit: 'mg/dL' },
+          { label: 'BMI', val: data.bmi, unit: 'kg/m²' },
+          { label: 'Smoking', val: data.smokingStatus, unit: '' },
+          { label: 'Hypertension', val: data.hypertension ? 'Yes' : 'No', unit: '' },
+        ];
+      default:
+        return [
+          { label: 'Glucose', val: data.glucose, unit: 'mg/dL' },
+          { label: 'BMI', val: data.bmi, unit: 'kg/m²' },
+          { label: 'BP Diastolic', val: data.bloodPressure, unit: 'mmHg' },
+          { label: 'Insulin', val: data.insulin, unit: 'mu U/ml' },
+        ];
+    }
   };
 
   if (records.length === 0) {
@@ -89,17 +161,17 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
         <div className="hidden print:block fixed inset-0 z-[9999] bg-white p-12 text-slate-900 overflow-visible">
           <div className="flex items-center justify-between mb-10 border-b-4 border-[#1E3A8A] pb-8">
             <div className="flex items-center gap-4">
-               <div className="bg-[#1E3A8A] p-3 rounded-2xl">
-                 <HeartPulse className="text-white w-10 h-10" />
-               </div>
-               <div>
-                 <h1 className="text-3xl font-black">GlucoScan Clinical Report</h1>
-                 <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">AI-Powered Diagnostics</p>
-               </div>
+              <div className="bg-[#1E3A8A] p-3 rounded-2xl">
+                <HeartPulse className="text-white w-10 h-10" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-black">HealthScan Clinical Report</h1>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">AI-Powered Diagnostics</p>
+              </div>
             </div>
             <div className="text-right">
-               <p className="text-xs font-bold text-slate-400 uppercase mb-1">Generated</p>
-               <p className="text-sm font-bold">{new Date().toLocaleString()}</p>
+              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Generated</p>
+              <p className="text-sm font-bold">{new Date().toLocaleString()}</p>
             </div>
           </div>
 
@@ -120,67 +192,61 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
             <div className="space-y-6">
               <h2 className="text-xl font-black text-[#1E3A8A] uppercase tracking-widest border-b border-slate-100 pb-2">Risk Summary</h2>
               <div className="flex items-center gap-6">
-                 <div className="text-5xl font-black text-[#1E3A8A]">{selectedForPrint.result.probability}%</div>
-                 <div>
-                    <p className={`text-xl font-black uppercase ${
-                      selectedForPrint.result.prediction === 'High Risk' ? 'text-rose-600' : 
-                      selectedForPrint.result.prediction === 'Moderate Risk' ? 'text-amber-600' : 'text-emerald-600'
+                <div className="text-5xl font-black text-[#1E3A8A]">{selectedForPrint.result.probability}%</div>
+                <div>
+                  <p className={`text-xl font-black uppercase ${selectedForPrint.result.prediction === 'High Risk' ? 'text-rose-600' :
+                    selectedForPrint.result.prediction === 'Moderate Risk' ? 'text-amber-600' : 'text-emerald-600'
                     }`}>{selectedForPrint.result.prediction}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Calculated Probability</p>
-                 </div>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Calculated Probability</p>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-4 gap-4 mb-12">
-            {[
-              { label: 'Glucose', val: selectedForPrint.data.glucose, unit: 'mg/dL' },
-              { label: 'BMI', val: selectedForPrint.data.bmi, unit: 'kg/m²' },
-              { label: 'BP Diastolic', val: selectedForPrint.data.bloodPressure, unit: 'mmHg' },
-              { label: 'Insulin', val: selectedForPrint.data.insulin, unit: 'mu U/ml' },
-            ].map(item => (
+            {renderPrintMetrics(selectedForPrint).map(item => (
               <div key={item.label} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center">
-                 <p className="text-[9px] font-black text-slate-400 uppercase mb-1">{item.label}</p>
-                 <p className="text-lg font-black">{item.val}</p>
-                 <p className="text-[8px] font-bold text-slate-300">{item.unit}</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase mb-1">{item.label}</p>
+                <p className="text-lg font-black">{item.val}</p>
+                <p className="text-[8px] font-bold text-slate-300">{item.unit}</p>
               </div>
             ))}
           </div>
 
           <div className="space-y-8">
             <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-               <h3 className="text-xs font-black text-[#1E3A8A] uppercase mb-4 tracking-widest">Clinical Explanation</h3>
-               <p className="text-sm leading-relaxed text-slate-700 italic">"{selectedForPrint.result.explanation}"</p>
+              <h3 className="text-xs font-black text-[#1E3A8A] uppercase mb-4 tracking-widest">Clinical Explanation</h3>
+              <p className="text-sm leading-relaxed text-slate-700 italic">"{selectedForPrint.result.explanation}"</p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-10">
               <div className="space-y-4">
-                 <h3 className="text-xs font-black text-rose-600 uppercase tracking-widest">Risk Factors Identified</h3>
-                 <ul className="space-y-2">
-                   {selectedForPrint.result.keyFactors.map((f, i) => (
-                     <li key={i} className="text-xs text-slate-600 flex items-start gap-2">
-                       <span className="font-bold text-slate-400">•</span> {f}
-                     </li>
-                   ))}
-                 </ul>
+                <h3 className="text-xs font-black text-rose-600 uppercase tracking-widest">Risk Factors Identified</h3>
+                <ul className="space-y-2">
+                  {selectedForPrint.result.keyFactors.map((f, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-start gap-2">
+                      <span className="font-bold text-slate-400">•</span> {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className="space-y-4">
-                 <h3 className="text-xs font-black text-[#14B8A6] uppercase tracking-widest">Clinical Recommendations</h3>
-                 <ul className="space-y-2">
-                   {selectedForPrint.result.recommendations.map((r, i) => (
-                     <li key={i} className="text-xs text-slate-600 flex items-start gap-2">
-                       <span className="font-bold text-[#14B8A6]">✓</span> {r}
-                     </li>
-                   ))}
-                 </ul>
+                <h3 className="text-xs font-black text-[#14B8A6] uppercase tracking-widest">Clinical Recommendations</h3>
+                <ul className="space-y-2">
+                  {selectedForPrint.result.recommendations.map((r, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-start gap-2">
+                      <span className="font-bold text-[#14B8A6]">✓</span> {r}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
 
           <div className="absolute bottom-12 left-12 right-12 text-center border-t border-slate-100 pt-6">
-             <p className="text-[8px] text-slate-400 leading-relaxed max-w-2xl mx-auto italic">
-               Medical Disclaimer: This report is generated by an artificial intelligence model and is intended for informational purposes only. It does not constitute a medical diagnosis. Consult a qualified healthcare professional before making health-related decisions.
-             </p>
+            <p className="text-[8px] text-slate-400 leading-relaxed max-w-2xl mx-auto italic">
+              Medical Disclaimer: This report is generated by an artificial intelligence model and is intended for informational purposes only. It does not constitute a medical diagnosis. Consult a qualified healthcare professional before making health-related decisions.
+            </p>
           </div>
         </div>
       )}
@@ -193,32 +259,32 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
             <p className="text-slate-500 dark:text-slate-400 text-sm">Visualizing the last 10 clinical assessments</p>
           </div>
           <div className="flex gap-2">
-             <div className="flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-900/20 rounded-full text-[10px] font-bold text-teal-600 dark:text-teal-400">
-               <div className="w-2 h-2 rounded-full bg-teal-500" /> Probability %
-             </div>
-             <div className="flex items-center gap-1.5 px-3 py-1 bg-lime-50 dark:bg-lime-900/20 rounded-full text-[10px] font-bold text-lime-600 dark:text-lime-400">
-               <div className="w-2 h-2 rounded-full bg-lime-400" /> Glucose mg/dL
-             </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-900/20 rounded-full text-[10px] font-bold text-teal-600 dark:text-teal-400">
+              <div className="w-2 h-2 rounded-full bg-teal-500" /> Probability %
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-lime-50 dark:bg-lime-900/20 rounded-full text-[10px] font-bold text-lime-600 dark:text-lime-400">
+              <div className="w-2 h-2 rounded-full bg-lime-400" /> Glucose mg/dL
+            </div>
           </div>
         </div>
-        
+
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#14B8A6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#14B8A6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorGlucose" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#A3E635" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#A3E635" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#A3E635" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#A3E635" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} dy={10} />
               <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', padding: '12px' }}
               />
               <Area type="monotone" dataKey="risk" stroke="#14B8A6" strokeWidth={4} fillOpacity={1} fill="url(#colorRisk)" name="Risk Probability" />
@@ -232,20 +298,20 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
       <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col lg:flex-row gap-6 items-center transition-colors duration-300">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search patients or diagnosis keywords..." 
+          <input
+            type="text"
+            placeholder="Search patients or diagnosis keywords..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#14B8A6] transition-all text-sm outline-none dark:text-white"
           />
         </div>
-        
+
         <div className="flex flex-wrap gap-4 items-center w-full lg:w-auto">
           <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-2xl">
             <Filter size={16} className="text-slate-400" />
-            <select 
-              value={riskFilter} 
+            <select
+              value={riskFilter}
               onChange={(e) => setRiskFilter(e.target.value as any)}
               className="bg-transparent text-sm font-bold text-slate-600 dark:text-slate-300 outline-none"
             >
@@ -256,7 +322,7 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
             </select>
           </div>
 
-          <button 
+          <button
             onClick={() => {
               setSortField('probability');
               setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
@@ -274,10 +340,9 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
           <div key={record.id} className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 hover:border-[#14B8A6] transition-all group shadow-sm flex flex-col h-full">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-3">
-                <div className={`p-3 rounded-2xl ${
-                  record.result.prediction === 'High Risk' ? 'bg-rose-50 text-rose-500' : 
+                <div className={`p-3 rounded-2xl ${record.result.prediction === 'High Risk' ? 'bg-rose-50 text-rose-500' :
                   record.result.prediction === 'Moderate Risk' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'
-                }`}>
+                  }`}>
                   <AlertCircle size={24} />
                 </div>
                 <div>
@@ -287,20 +352,15 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
                   </p>
                 </div>
               </div>
-              <div className={`text-xl font-black ${
-                record.result.prediction === 'High Risk' ? 'text-rose-500' : 
+              <div className={`text-xl font-black ${record.result.prediction === 'High Risk' ? 'text-rose-500' :
                 record.result.prediction === 'Moderate Risk' ? 'text-amber-500' : 'text-emerald-500'
-              }`}>
+                }`}>
                 {record.result.probability}%
               </div>
             </div>
-            
+
             <div className="grid grid-cols-3 gap-2 mb-6">
-              {[
-                { label: 'GLUC', val: record.data.glucose, unit: 'mg' },
-                { label: 'BMI', val: record.data.bmi, unit: '' },
-                { label: 'AGE', val: record.data.age, unit: 'yr' }
-              ].map(stat => (
+              {renderMetrics(record).map(stat => (
                 <div key={stat.label} className="bg-slate-50 dark:bg-slate-900 p-3 rounded-2xl text-center transition-colors">
                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-tighter mb-1">{stat.label}</p>
                   <p className="text-sm font-black text-[#1E3A8A] dark:text-blue-400">{stat.val}<span className="text-[8px] ml-0.5 text-slate-400">{stat.unit}</span></p>
@@ -315,19 +375,19 @@ const RecordsHistory: React.FC<RecordsHistoryProps> = ({ records }) => {
             </div>
 
             <div className="mt-6 pt-6 border-t border-slate-50 dark:border-slate-700 flex justify-between items-center">
-               <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-[9px] font-bold text-slate-400 uppercase">Assessment: {record.id.split('-')[0]}</span>
-               <div className="flex gap-2">
-                 <button 
+              <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-[9px] font-bold text-slate-400 uppercase">Assessment: {(record.type || 'diabetes').toUpperCase()}</span>
+              <div className="flex gap-2">
+                <button
                   onClick={() => exportRecordPDF(record)}
                   className="p-2 bg-slate-50 dark:bg-slate-700 text-slate-400 hover:text-[#1E3A8A] dark:hover:text-blue-400 rounded-xl transition-all"
                   title="Export PDF Report"
-                 >
-                   <Printer size={16} />
-                 </button>
-                 <button className="text-[#14B8A6] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                   Full File <ChevronRight size={14} />
-                 </button>
-               </div>
+                >
+                  <Printer size={16} />
+                </button>
+                <button className="text-[#14B8A6] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  Full File <ChevronRight size={14} />
+                </button>
+              </div>
             </div>
           </div>
         ))}
