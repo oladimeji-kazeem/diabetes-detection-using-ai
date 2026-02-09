@@ -1,0 +1,170 @@
+
+import React from 'react';
+import { 
+  Target, 
+  HelpCircle, 
+  Activity, 
+  Droplets, 
+  User, 
+  Heart, 
+  Dna,
+  ShieldCheck,
+  AlertCircle
+} from 'lucide-react';
+import { IndicatorInfo } from '../types';
+
+export const INDICATORS: IndicatorInfo[] = [
+  {
+    id: 'glucose',
+    label: '2-Hour Plasma Glucose',
+    unit: 'mg/dL',
+    range: '70 - 140',
+    description: 'Measures your blood sugar concentration exactly 2 hours after consuming a standardized 75-gram oral glucose solution.',
+    whyItMatters: 'This is the "gold standard" for identifying impaired glucose tolerance (prediabetes) and Type 2 diabetes. It shows how efficiently your pancreas secretes insulin and how well your cells use it.',
+    icon: 'droplets'
+  },
+  {
+    id: 'bmi',
+    label: 'Body Mass Index (BMI)',
+    unit: 'kg/m²',
+    range: '18.5 - 24.9',
+    description: 'A calculation based on your weight and height that estimates body fat and health risks.',
+    whyItMatters: 'Excessive body weight, especially abdominal fat, is the leading cause of insulin resistance. Adipose tissue releases pro-inflammatory chemicals that interfere with insulin signals.',
+    icon: 'user'
+  },
+  {
+    id: 'bloodPressure',
+    label: 'Diastolic Blood Pressure',
+    unit: 'mmHg',
+    range: '60 - 80',
+    description: 'The pressure in your blood vessels when the heart muscle relaxes between beats.',
+    whyItMatters: 'High blood pressure (Hypertension) and diabetes often occur together (Metabolic Syndrome). They both damage blood vessels, compounding the risk of heart disease and stroke.',
+    icon: 'heart'
+  },
+  {
+    id: 'pedigree',
+    label: 'Pedigree Function',
+    unit: 'Score',
+    range: '0.1 - 2.5',
+    description: 'A numerical score evaluating your genetic predisposition based on siblings, parents, and grandparents with diabetes.',
+    whyItMatters: 'While lifestyle is critical, genetics provide the "baseline" risk. This score helps determine how aggressive preventative measures should be based on your DNA.',
+    icon: 'dna'
+  },
+  {
+    id: 'insulin',
+    label: 'Serum Insulin',
+    unit: 'mu U/ml',
+    range: '15 - 270',
+    description: 'A lab measurement of the hormone insulin present in your serum 2 hours after a glucose challenge.',
+    whyItMatters: 'Very high insulin with high glucose indicates "Insulin Resistance" (your body is ignoring the hormone). Low insulin with high glucose indicates "Insulin Deficiency" (your pancreas is failing).',
+    icon: 'activity'
+  },
+  {
+    id: 'skinThickness',
+    label: 'Triceps Skin Thickness',
+    unit: 'mm',
+    range: '10 - 50',
+    description: 'The thickness of a skin fold on the back of the upper arm, used as a proxy for subcutaneous body fat.',
+    whyItMatters: 'In clinical studies, this marker is often more predictive of metabolic syndrome than total weight, as it specifically measures peripheral fat distribution.',
+    icon: 'shield'
+  }
+];
+
+const IndicatorWiki: React.FC = () => {
+  const getIcon = (id: string) => {
+    switch (id) {
+      case 'glucose': return <Droplets />;
+      case 'bmi': return <User />;
+      case 'bloodPressure': return <Heart />;
+      case 'pedigree': return <Dna />;
+      case 'insulin': return <Activity />;
+      case 'skinThickness': return <ShieldCheck />;
+      default: return <Activity />;
+    }
+  };
+
+  return (
+    <div className="space-y-10">
+      <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="relative z-10">
+          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Clinical Parameter Library</h2>
+          <p className="text-slate-500 font-medium max-w-3xl leading-relaxed text-lg">
+            GlucoScan uses several key physiological and demographic indicators to model your risk profile. 
+            Understanding these metrics is essential for accurate health management.
+          </p>
+        </div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {INDICATORS.map((indicator) => (
+          <div key={indicator.id} className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-50/50 transition-all duration-300 group">
+            <div className="flex items-start justify-between mb-8">
+              <div className="p-5 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                {getIcon(indicator.id)}
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Target Range</p>
+                <p className="text-xl font-black text-slate-800 tracking-tight">
+                  {indicator.range} <span className="text-xs font-bold text-slate-400">{indicator.unit}</span>
+                </p>
+              </div>
+            </div>
+            
+            <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">{indicator.label}</h3>
+            <p className="text-slate-600 mb-8 leading-relaxed font-medium">
+              {indicator.description}
+            </p>
+            
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 relative">
+              <div className="absolute top-4 right-4 text-blue-200">
+                <Target size={24} />
+              </div>
+              <h4 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                Clinical Significance
+              </h4>
+              <p className="text-sm text-slate-500 leading-relaxed italic font-medium">
+                "{indicator.whyItMatters}"
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="bg-blue-600 text-white p-12 rounded-[3rem] shadow-2xl shadow-blue-200 relative overflow-hidden group">
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
+              <HelpCircle size={32} />
+            </div>
+            <h2 className="text-3xl font-black tracking-tight">Need a customized explanation?</h2>
+          </div>
+          <p className="text-blue-100 mb-10 leading-relaxed text-xl max-w-3xl font-medium">
+            Our specialized AI Assistant can break down these markers further based on your specific age, gender, and recent lab results.
+          </p>
+          <button className="bg-white text-blue-600 px-10 py-5 rounded-[1.5rem] font-black hover:bg-blue-50 transition-all transform active:scale-95 shadow-xl shadow-blue-800/20 tracking-tight">
+            Consult AI Intelligence
+          </button>
+        </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl transition-transform duration-1000 group-hover:scale-110"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full -ml-32 -mb-32 blur-2xl"></div>
+      </div>
+
+      <div className="flex items-center gap-4 p-8 bg-amber-50 rounded-[2rem] border border-amber-100">
+        <div className="p-3 bg-amber-100 text-amber-600 rounded-xl">
+          <AlertCircle size={24} />
+        </div>
+        <div>
+          <h4 className="font-bold text-amber-900">Important Scientific Note</h4>
+          <p className="text-sm text-amber-700/80 font-medium">
+            The reference ranges provided are generalized. Clinical interpretation should always consider individual context and lab-specific reference intervals.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default IndicatorWiki;
